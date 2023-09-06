@@ -1,4 +1,4 @@
-# 06 Projects
+# 10 Projects
 Welcome to my Data Science journey repository! Here's an overview of the content:
 
 - [01 ](https://github.com/lokmanTech)
