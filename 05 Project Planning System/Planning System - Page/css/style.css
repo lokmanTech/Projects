@@ -10,3 +10,16 @@ body {
 .date-time {
     margin: 10px;
 }
+
+#balance {
+    margin-top: 20px;
+}
+
+.ledger-entry {
+    margin-bottom: 5px;
+}
+
+.delete-button {
+    margin-left: 10px;
+    cursor: pointer;
+}

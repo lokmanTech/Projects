@@ -4,15 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLANNER</title>
+    <title>DAILY LOG</title>
     <!--JAVASCRIPT FILE-->
     <script src="js/main.js"></script>
+    <!-- Include jsPDF library -->
+    <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
     <!-- CSS File-->
     <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
-    <h1>PLANNER</h1>
+    <h1>DAILY LOG</h1>
     <div class="side-by-side">
         <div class="date-time">
             <h3 id="currentTime"></h3>
@@ -23,26 +25,49 @@
         </p>
     </div>
 
-
-    <!-- MONEY TRACKER-->
     <fieldset>
         <legend>
-            <h5>MONEY TRACKER</h5>
+            <h5>LEDGER</h5>
         </legend>
-        <label for="income"></label>
-        <input type="number" id="income" placeholder="ENTER INCOME">
-        <button onclick="addIncome()">ADD INCOME</button>
+        <form id="ledgerForm">
+            <label for="transactionType">Transaction Type:</label>
+            <select id="transactionType" name="transactionType" required>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
 
-        <br>
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" required>
 
-        <label for="expenses"></label>
-        <input type="number" id="expenses" placeholder="ENTER EXPENSES">
-        <button onclick="addExpenses()">ADD EXPENSES</button>
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="amount" step="0.01" required>
 
-        <br>
+            <button type="button" onclick="submitTransaction()">Submit Transaction</button>
+        </form>
 
-        <h5>BALANCE: $<span id="balance">0</span></h5>
+        <h4>Ledger Entries</h4>
+        <ul id="ledgerEntries"></ul>
+
+        <div id="balance">
+            <h3>Balance</h3>
+            <p id="balanceAmount">RM 0.00</p>
+        </div>
     </fieldset>
+
+    <fieldset>
+        <legend>
+            <h5>TASK MANAGER</h5>
+        </legend>
+        <div id="taskManager">
+            <input type="text" id="taskInput" placeholder="Enter your task">
+            <button onclick="addTask()">Add Task</button>
+            <ul id="taskList"></ul>
+        </div>
+    </fieldset>
+
+    <!--DOWNLOAD BUTTON-->
+    <br>
+    <button id="downloadButton" onclick="downloadAndSaveToServer()">Download as PDF</button>
 </body>
 
 </html>
