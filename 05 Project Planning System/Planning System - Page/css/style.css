@@ -1,0 +1,12 @@
+body {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: justify;
+}
+
+.side-by-side {
+    display: flex;
+}
+
+.date-time {
+    margin: 10px;
+}
