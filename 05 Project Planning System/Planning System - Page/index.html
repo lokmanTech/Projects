@@ -65,6 +65,33 @@
         </div>
     </fieldset>
 
+    <fieldset>
+        <legend>
+            <h5>WORKSPACE MANAGER</h5>
+        </legend>
+        <div id="workspaceManager">
+        <label for="projectInput">Project:</label>
+        <input type="text" id="projectInput" placeholder="Enter the project name">
+        <label for="timeInHourInput">Time In:</label>
+        <input type="text" id="timeInHourInput" placeholder="HH" maxlength="2">
+        <input type="text" id="timeInMinuteInput" placeholder="MM" maxlength="2">
+        <select id="timeInMeridiemInput">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+        </select>
+        <label for="timeOutHourInput">Time Out:</label>
+        <input type="text" id="timeOutHourInput" placeholder="HH" maxlength="2">
+        <input type="text" id="timeOutMinuteInput" placeholder="MM" maxlength="2">
+        <select id="timeOutMeridiemInput">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+        </select>
+        <label for="statusInput">Project Status:</label>
+        <textarea id="statusInput" placeholder="Enter project status"></textarea>
+        <button onclick="addWorkspaceEntry()">Add Entry</button>
+        <ul id="workspaceList"></ul>
+    </div>
+    </fieldset>
     <!--DOWNLOAD BUTTON-->
     <br>
     <button id="downloadButton" onclick="downloadAndSaveToServer()">Download as PDF</button>

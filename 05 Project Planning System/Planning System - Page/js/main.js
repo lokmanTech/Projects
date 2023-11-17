@@ -96,18 +96,53 @@ function addTask() {
     }
 }
 
+/*-----------------------------WORKSPACE MANAGER-----------------------------*/
+function addWorkspaceEntry() {
+    var projectInput = document.getElementById('projectInput');
+    var timeInHourInput = document.getElementById('timeInHourInput');
+    var timeInMinuteInput = document.getElementById('timeInMinuteInput');
+    var timeInMeridiemInput = document.getElementById('timeInMeridiemInput');
+    var timeOutHourInput = document.getElementById('timeOutHourInput');
+    var timeOutMinuteInput = document.getElementById('timeOutMinuteInput');
+    var timeOutMeridiemInput = document.getElementById('timeOutMeridiemInput');
+    var statusInput = document.getElementById('statusInput');
+    var workspaceList = document.getElementById('workspaceList');
 
+    var timeIn = timeInHourInput.value + ':' + timeInMinuteInput.value + ' ' + timeInMeridiemInput.value;
+    var timeOut = timeOutHourInput.value + ':' + timeOutMinuteInput.value + ' ' + timeOutMeridiemInput.value;
+
+    if (projectInput.value.trim() !== '' && timeIn !== ' :' && timeOut !== ' :') {
+        var li = document.createElement('li');
+        li.innerHTML = `<strong>Project:</strong> ${projectInput.value}<br>
+                        <strong>Time In:</strong> ${timeIn}<br>
+                        <strong>Time Out:</strong> ${timeOut}<br>
+                        <strong>Status:</strong> ${statusInput.value}`;
+        workspaceList.appendChild(li);
+
+        // Clear input fields
+        projectInput.value = '';
+        timeInHourInput.value = '';
+        timeInMinuteInput.value = '';
+        timeOutHourInput.value = '';
+        timeOutMinuteInput.value = '';
+        statusInput.value = '';
+    }
+}
 /*----------------------------------DOWNLOAD--------------------------------*/
 function downloadAndSaveToServer() {
     // Get ledger entries
-    var ledgerEntries = document.getElementById('ledgerEntries').innerHTML;
+    var workspaceList = document.getElementById('workspaceList').innerHTML;
 
     // Create a new instance of html2pdf
     var pdf = new html2pdf(document.body, {
         margin: 10,
-        filename: 'ledger.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
+        filename: 'wholeWebsite.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { 
+            scale: 2,
+            windowWidth: document.body.scrollWidth,
+            windowHeight: document.body.scrollHeight
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     });
 
@@ -115,8 +150,8 @@ function downloadAndSaveToServer() {
     pdf.toBlob(function (blob) {
         // Prepare data
         var data = new FormData();
-        data.append('file', blob, 'ledger.pdf');
-        data.append('entries', ledgerEntries);
+        data.append('file', blob, 'dailyLog.pdf');
+        data.append('entries', workspaceList);
 
         // Send data to server using fetch API
         fetch('save_to_server.php', {
