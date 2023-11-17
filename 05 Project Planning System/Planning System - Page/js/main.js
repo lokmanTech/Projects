@@ -97,8 +97,17 @@ function addTask() {
 }
 
 /*-----------------------------WORKSPACE MANAGER-----------------------------*/
+function validateTimeInput(input) {
+    // Ensure that the entered value is a valid number and within the allowed range
+    var value = parseInt(input.value, 10);
+    if (isNaN(value) || value < 0 || value > 60) {
+        input.value = ''; // Clear the input if it's not a valid number or out of range
+    }
+}
+
 function addWorkspaceEntry() {
     var projectInput = document.getElementById('projectInput');
+    var projectType = document.getElementById('projectType');
     var timeInHourInput = document.getElementById('timeInHourInput');
     var timeInMinuteInput = document.getElementById('timeInMinuteInput');
     var timeInMeridiemInput = document.getElementById('timeInMeridiemInput');
@@ -106,64 +115,163 @@ function addWorkspaceEntry() {
     var timeOutMinuteInput = document.getElementById('timeOutMinuteInput');
     var timeOutMeridiemInput = document.getElementById('timeOutMeridiemInput');
     var statusInput = document.getElementById('statusInput');
+    var appointmentWithInput = document.getElementById('appointmentWithInput');
     var workspaceList = document.getElementById('workspaceList');
 
     var timeIn = timeInHourInput.value + ':' + timeInMinuteInput.value + ' ' + timeInMeridiemInput.value;
     var timeOut = timeOutHourInput.value + ':' + timeOutMinuteInput.value + ' ' + timeOutMeridiemInput.value;
 
-    if (projectInput.value.trim() !== '' && timeIn !== ' :' && timeOut !== ' :') {
+    // Convert the time strings to Date objects for easier manipulation
+    var currentDate = new Date(); // Current date
+    var timeInDate = new Date(currentDate.toDateString() + ' ' + timeIn);
+    var timeOutDate = new Date(currentDate.toDateString() + ' ' + timeOut);
+
+    // Calculate the time difference in milliseconds
+    var timeDiff = timeOutDate - timeInDate;
+
+    // Convert the time difference to hours
+    var hours = timeDiff / (1000 * 60 * 60);
+
+    // Validate the entered time values
+    if (
+        validateTimeValues(timeInHourInput.value, timeInMinuteInput.value) &&
+        validateTimeValues(timeOutHourInput.value, timeOutMinuteInput.value) &&
+        projectInput.value.trim() !== ''
+    ) {
+        // Check if the time difference exceeds 24 hours
+        if (hours < 0 || hours > 24) {
+            alert('Please ensure that Time Out is later than Time In and both are within the same day.');
+            return;
+        }
+
+        var selectedProjectType = projectType.options[projectType.selectedIndex].text;
+
+        // Calculate the time difference in milliseconds after adjusting the date
+        timeDiff = timeOutDate - timeInDate;
+
+        // Convert the time difference to hours
+        hours = timeDiff / (1000 * 60 * 60);
+
         var li = document.createElement('li');
         li.innerHTML = `<strong>Project:</strong> ${projectInput.value}<br>
-                        <strong>Time In:</strong> ${timeIn}<br>
-                        <strong>Time Out:</strong> ${timeOut}<br>
-                        <strong>Status:</strong> ${statusInput.value}`;
+                            <strong>Project Type:</strong> ${selectedProjectType}<br>
+                            <strong>Time In:</strong> ${timeIn}<br>
+                            <strong>Time Out:</strong> ${timeOut}<br>
+                            <strong>Hours Worked:</strong> ${hours.toFixed(2)} hours<br>
+                            <strong>Status:</strong> ${statusInput.value}<br>
+                            <strong>Appointment With:</strong> ${appointmentWithInput.value}
+                            <button onclick="deleteWorkspaceEntry(this)">Delete</button>`;
         workspaceList.appendChild(li);
 
         // Clear input fields
         projectInput.value = '';
+        projectType.selectedIndex = 0; // Reset the project type dropdown to the default option
         timeInHourInput.value = '';
         timeInMinuteInput.value = '';
         timeOutHourInput.value = '';
         timeOutMinuteInput.value = '';
         statusInput.value = '';
+        appointmentWithInput.value = '';
+    } else {
+        alert('Please enter a valid time in the format HH:MM AM/PM for both Time In and Time Out. Also, please insert all relevant information.');
     }
 }
-/*----------------------------------DOWNLOAD--------------------------------*/
-function downloadAndSaveToServer() {
-    // Get ledger entries
-    var workspaceList = document.getElementById('workspaceList').innerHTML;
 
-    // Create a new instance of html2pdf
-    var pdf = new html2pdf(document.body, {
-        margin: 10,
-        filename: 'wholeWebsite.pdf',
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { 
-            scale: 2,
-            windowWidth: document.body.scrollWidth,
-            windowHeight: document.body.scrollHeight
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    });
-
-    // Trigger the PDF generation
-    pdf.toBlob(function (blob) {
-        // Prepare data
-        var data = new FormData();
-        data.append('file', blob, 'dailyLog.pdf');
-        data.append('entries', workspaceList);
-
-        // Send data to server using fetch API
-        fetch('save_to_server.php', {
-            method: 'POST',
-            body: data
-        })
-            .then(response => response.json())
-            .then(result => {
-                alert(result.message);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    });
+function deleteWorkspaceEntry(button) {
+    var li = button.parentElement;
+    li.remove();
 }
+
+function validateTimeValues(hour, minute) {
+    // Validate that the entered time values are in the correct range
+    var hourValue = parseInt(hour, 10);
+    var minuteValue = parseInt(minute, 10);
+
+    if (
+        isNaN(hourValue) || isNaN(minuteValue) ||
+        hourValue < 0 || hourValue > 12 ||
+        minuteValue < 0 || minuteValue > 60
+    ) {
+        return false;
+    }
+
+    return true;
+}
+/*----------------------------------DOWNLOAD--------------------------------*/
+function printToPDF() {
+    // Open the browser's print dialog
+    window.print();
+}
+
+/*---------------------- PRINT DOCUMENT -----------------------------------*/
+// THIS IS PRINT WITHOUT GO TO NEW WINDOW
+function printDocument() {
+    var printContent =
+        "<h1>DAILY LOG</h1>" +
+        "<div class='date-time'>" +
+        "<h3 id='currentDate'>" + document.getElementById('currentDate').textContent + "</h3>" +
+        "<h3 id='currentTime'>" + document.getElementById('currentTime').textContent + "</h3>" +
+        "</div>" +
+        "<fieldset>" +
+        "<legend><h5>LEDGER</h5></legend>" +
+        document.getElementById('ledgerEntries').outerHTML +
+        "<div id='balance'>" +
+        "<h3>Balance</h3>" +
+        "<p id='balanceAmount'>" + document.getElementById('balanceAmount').textContent + "</p>" +
+        "</div>" +
+        "</fieldset>" +
+        "<fieldset>" +
+        "<legend><h5>TASK MANAGER</h5></legend>" +
+        document.getElementById('taskList').outerHTML +
+        "</fieldset>" +
+        "<fieldset>" +
+        "<legend><h5>WORKSPACE MANAGER</h5></legend>" +
+        document.getElementById('workspaceList').outerHTML +
+        "</fieldset>";
+
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    iframeDoc.write('<html><head><title>Daily Log</title></head><body>' + printContent + '</body></html>');
+    iframeDoc.close();
+
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+
+    document.body.removeChild(iframe);
+}
+
+/*
+// THIS ONE PRINT AND DISPLAY OUTPUT ON NEW WINDOW
+function printDocument() {
+    var printContent =
+        "<h1>DAILY LOG</h1>" +
+        "<div class='date-time'>" +
+        "<h3 id='currentDate'>" + document.getElementById('currentDate').textContent + "</h3>" +
+        "<h3 id='currentTime'>" + document.getElementById('currentTime').textContent + "</h3>" +
+        "</div>" +
+        "<fieldset>" +
+        "<legend><h5>LEDGER</h5></legend>" +
+        document.getElementById('ledgerEntries').outerHTML +
+        "<div id='balance'>" +
+        "<h3>Balance</h3>" +
+        "<p id='balanceAmount'>" + document.getElementById('balanceAmount').textContent + "</p>" +
+        "</div>" +
+        "</fieldset>" +
+        "<fieldset>" +
+        "<legend><h5>TASK MANAGER</h5></legend>" +
+        document.getElementById('taskList').outerHTML +
+        "</fieldset>" +
+        "<fieldset>" +
+        "<legend><h5>WORKSPACE MANAGER</h5></legend>" +
+        document.getElementById('workspaceList').outerHTML +
+        "</fieldset>";
+
+    var printWindow = window.open('', '_blank');
+    printWindow.document.write('<html><head><title>Daily Log</title></head><body>' + printContent + '</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+}
+*/
