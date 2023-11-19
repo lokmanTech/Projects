@@ -197,14 +197,41 @@ function validateTimeValues(hour, minute) {
 
     return true;
 }
-/*----------------------------------DOWNLOAD--------------------------------*/
-function printToPDF() {
-    // Open the browser's print dialog
-    window.print();
+
+/*---------------------- JOURNAL MANAGER -------------------------------*/
+function addJournalEntry() {
+    var journalInput = document.getElementById('journalInput');
+    var journalHourInput = document.getElementById('journalHourInput');
+    var journalMinuteInput = document.getElementById('journalMinuteInput');
+    var journalMeridiemInput = document.getElementById('journalMeridiemInput');
+    var journalList = document.getElementById('journalList');
+
+    // Validate the entered time values
+    if (validateTimeValues(journalHourInput.value, journalMinuteInput.value) && journalInput.value.trim() !== '') {
+        var time = journalHourInput.value + ':' + journalMinuteInput.value + ' ' + journalMeridiemInput.value;
+
+        var li = document.createElement('li');
+        li.innerHTML = `<strong>Time:</strong> ${time}<br>
+                        <strong>Entry:</strong> ${journalInput.value}
+                        <button onclick="deleteJournalEntry(this)">Delete</button>`;
+        journalList.appendChild(li);
+
+        // Clear input fields
+        journalInput.value = '';
+        journalHourInput.value = '';
+        journalMinuteInput.value = '';
+    } else {
+        alert('Please enter a valid time in the format HH:MM AM/PM and provide a journal entry.');
+    }
 }
 
-/*---------------------- PRINT DOCUMENT -----------------------------------*/
-// THIS IS PRINT WITHOUT GO TO NEW WINDOW
+function deleteJournalEntry(button) {
+    var li = button.parentElement;
+    li.remove();
+}
+
+/*---------------------- PRINT DOCUMENT -------------------------------*/
+
 function printDocument() {
     var printContent =
         "<h1>DAILY LOG</h1>" +
@@ -227,6 +254,10 @@ function printDocument() {
         "<fieldset>" +
         "<legend><h5>WORKSPACE MANAGER</h5></legend>" +
         document.getElementById('workspaceList').outerHTML +
+        "</fieldset>" +
+        "<fieldset>" +
+        "<legend><h5>JOURNAL</h5></legend>" +
+        document.getElementById('journalList').outerHTML +
         "</fieldset>";
 
     var iframe = document.createElement('iframe');
@@ -242,36 +273,3 @@ function printDocument() {
 
     document.body.removeChild(iframe);
 }
-
-/*
-// THIS ONE PRINT AND DISPLAY OUTPUT ON NEW WINDOW
-function printDocument() {
-    var printContent =
-        "<h1>DAILY LOG</h1>" +
-        "<div class='date-time'>" +
-        "<h3 id='currentDate'>" + document.getElementById('currentDate').textContent + "</h3>" +
-        "<h3 id='currentTime'>" + document.getElementById('currentTime').textContent + "</h3>" +
-        "</div>" +
-        "<fieldset>" +
-        "<legend><h5>LEDGER</h5></legend>" +
-        document.getElementById('ledgerEntries').outerHTML +
-        "<div id='balance'>" +
-        "<h3>Balance</h3>" +
-        "<p id='balanceAmount'>" + document.getElementById('balanceAmount').textContent + "</p>" +
-        "</div>" +
-        "</fieldset>" +
-        "<fieldset>" +
-        "<legend><h5>TASK MANAGER</h5></legend>" +
-        document.getElementById('taskList').outerHTML +
-        "</fieldset>" +
-        "<fieldset>" +
-        "<legend><h5>WORKSPACE MANAGER</h5></legend>" +
-        document.getElementById('workspaceList').outerHTML +
-        "</fieldset>";
-
-    var printWindow = window.open('', '_blank');
-    printWindow.document.write('<html><head><title>Daily Log</title></head><body>' + printContent + '</body></html>');
-    printWindow.document.close();
-    printWindow.print();
-}
-*/

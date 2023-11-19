@@ -34,6 +34,7 @@
     <!-- End section navbar -->
 
 
+    <!-- HEAD -->
     <h1>DAILY LOG</h1>
     <div class="side-by-side">
         <div class="date-time">
@@ -44,7 +45,9 @@
         </div>
         </p>
     </div>
+    <!-- HEAD-->
 
+    <!-- LEDGER -->
     <fieldset>
         <legend>
             <h5>LEDGER</h5>
@@ -73,7 +76,9 @@
             <p id="balanceAmount">RM 0.00</p>
         </div>
     </fieldset>
+    <!-- LEDGER -->
 
+    <!-- TASK MANAGER -->
     <fieldset>
         <legend>
             <h5>TASK MANAGER</h5>
@@ -84,7 +89,9 @@
             <ul id="taskList"></ul>
         </div>
     </fieldset>
+    <!-- TASK MANAGER -->
 
+    <!-- WORKSPACE MANAGER -->
     <fieldset>
         <legend>
             <h5>WORKSPACE MANAGER</h5>
@@ -156,9 +163,41 @@
             <ul id="workspaceList"></ul>
         </div>
     </fieldset>
-    <!--DOWNLOAD BUTTON-->
+    <!-- WORKSPACE MANAGER -->
+
+    <!-- JOURNAL MANAGER -->
+    <fieldset>
+        <legend>
+            <h5>Journal</h5>
+        </legend>
+        <div id="journalManager">
+            <label for="journalTimeInput">Time:</label>
+            <div>
+                <label for="journalHourInput">Hour:</label>
+                <input type="text" id="journalHourInput" placeholder="HH" maxlength="2" oninput="validateTimeInput(this)">
+                <label for="journalMinuteInput">Minute:</label>
+                <input type="text" id="journalMinuteInput" placeholder="MM" maxlength="2" oninput="validateTimeInput(this)">
+                <label for="journalMeridiemInput"></label>
+                <select id="journalMeridiemInput">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div>
+
+            <label for="journalInput">Journal Entry:</label>
+            <textarea id="journalInput" placeholder="Enter your journal entry"></textarea>
+    
+            <button onclick="addJournalEntry()">Add Entry</button>
+            <ul id="journalList"></ul>
+        </div>
+    </fieldset>
+</div>
+    <!-- JOURNAL MANAGER -->
+
+    <!-- DOWNLOAD BUTTON -->
     <br>
     <button onclick="printDocument()" class="print-button">Save As PDF</button>
+    <!-- DOWNLOAD BUTTON -->
 </body>
 
 </html>
